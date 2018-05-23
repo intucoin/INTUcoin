@@ -373,14 +373,16 @@ const size_t BLOCK_MAX_WIDTH = 7;
 const size_t UNLOCK_TIME_MAX_WIDTH = 11;
 
 void printListTransfersHeader(LoggerRef& logger) {
-  std::string header = makeCenteredString(TIMESTAMP_MAX_WIDTH, "timestamp (UTC)") + "  ";
-  header += makeCenteredString(HASH_MAX_WIDTH, "hash") + "  ";
-  header += makeCenteredString(TOTAL_AMOUNT_MAX_WIDTH, "total amount") + "  ";
-  header += makeCenteredString(FEE_MAX_WIDTH, "fee") + "  ";
-  header += makeCenteredString(BLOCK_MAX_WIDTH, "block") + "  ";
-  header += makeCenteredString(UNLOCK_TIME_MAX_WIDTH, "unlock time");
+  std::string header = makeCenteredString(TIMESTAMP_MAX_WIDTH, "TIMESTAMP (UTC)") + "  ";
+  header += makeCenteredString(HASH_MAX_WIDTH, "HASH") + "  ";
+  header += makeCenteredString(TOTAL_AMOUNT_MAX_WIDTH, "TOTAL AMOUNT") + "  ";
+  header += makeCenteredString(FEE_MAX_WIDTH, "FEE") + "  ";
+  header += makeCenteredString(BLOCK_MAX_WIDTH, "BLOCK") + "  ";
+  header += makeCenteredString(UNLOCK_TIME_MAX_WIDTH, "UNLOCK TIME");
 
+  logger(INFO) << std::string(header.size(), '-');
   logger(INFO) << header;
+ // logger(INFO) << std::string(header.size(), '-');  logger(INFO) << header;
   logger(INFO) << std::string(header.size(), '-');
 }
 
@@ -475,6 +477,7 @@ simple_wallet::simple_wallet(System::Dispatcher& dispatcher, const CryptoNote::C
   m_consoleHandler.setHandler("export_keys", boost::bind(&simple_wallet::export_keys, this, _1), "Show the secret keys of the openned wallet");
   m_consoleHandler.setHandler("balance", boost::bind(&simple_wallet::show_balance, this, _1), "Show current wallet balance");
   m_consoleHandler.setHandler("incoming_transfers", boost::bind(&simple_wallet::show_incoming_transfers, this, _1), "Show incoming transfers");
+  m_consoleHandler.setHandler("outgoing_transfers", boost::bind(&simple_wallet::show_outgoing_transfers, this, _1), "Show outgoing transfers");
   m_consoleHandler.setHandler("list_transfers", boost::bind(&simple_wallet::listTransfers, this, _1), "Show all known transfers");
   m_consoleHandler.setHandler("payments", boost::bind(&simple_wallet::show_payments, this, _1), "payments <payment_id_1> [<payment_id_2> ... <payment_id_N>] - Show payments <payment_id_1>, ... <payment_id_N>");
   m_consoleHandler.setHandler("bc_height", boost::bind(&simple_wallet::show_blockchain_height, this, _1), "Show blockchain height");
@@ -541,7 +544,7 @@ if (!(c == 'O' || c == 'G' || c == 'E' || c == 'I' || c == 'M' || c == 'o' || c 
     std::cout << "Specify wallet file name (e.g., wallet.bin).\n";
     std::string userInput;
     do {
-      std::cout << "Wallet file name: ";
+      std::cout << "WALLET FILE NAME     # ";
       std::getline(std::cin, userInput);
       boost::algorithm::trim(userInput);
     } while (userInput.empty());
@@ -650,12 +653,12 @@ Crypto::SecretKey private_view_key;
 
 if (key_import) {
     do {
-      std::cout << "Private Spend Key: ";
+      std::cout << "PRIVATE SPEND KEY     #  ";
       std::getline(std::cin, private_spend_key_string);
       boost::algorithm::trim(private_spend_key_string);
     } while (private_spend_key_string.empty());
     do {
-      std::cout << "Private View Key: ";
+      std::cout << "PRIVATE VIEW KEY      #  ";
       std::getline(std::cin, private_view_key_string);
       boost::algorithm::trim(private_view_key_string);
     } while (private_view_key_string.empty());
@@ -663,7 +666,7 @@ if (key_import) {
   std::string mnemonic_phrase;
 
   do {
-    std::cout << "Mnemonics Phrase (25 words): ";
+      std::cout << "MNEMONICS  (25 WORDS)# ";
     std::getline(std::cin, mnemonic_phrase);
     boost::algorithm::trim(mnemonic_phrase);
     boost::algorithm::to_lower(mnemonic_phrase);
@@ -714,9 +717,9 @@ if (key_import) {
     m_wallet->addObserver(this);
     m_node->addObserver(static_cast<INodeObserver*>(this));
 
-    logger(INFO, BRIGHT_WHITE) << "Opened wallet: " << m_wallet->getAddress();
+    logger(INFO, BRIGHT_WHITE) << "OPENED WALLET    # " << m_wallet->getAddress();
 
-    success_msg_writer() <<
+    success_msg_writer() <<"\n"<<
       "**********************************************************************\n" <<
       "Use \"help\" command to see the list of available commands.\n" <<
       "**********************************************************************";
@@ -864,15 +867,15 @@ bool simple_wallet::new_wallet(const std::string &wallet_file, const std::string
     m_wallet->getAccountKeys(keys);
 
     logger(INFO, BRIGHT_WHITE) <<
-      "Generated new wallet: " << m_wallet->getAddress() << std::endl <<
-      "view key: " << Common::podToHex(keys.viewSecretKey);
+      "GENERATED NEW WALLET # " << m_wallet->getAddress() << std::endl <<
+      "VIEW KEY             # " << Common::podToHex(keys.viewSecretKey);
   }
   catch (const std::exception& e) {
     fail_msg_writer() << "failed to generate new wallet: " << e.what();
     return false;
   }
 
-  success_msg_writer() <<
+  success_msg_writer() <<"\n"<<
     "**********************************************************************\n" <<
     "Your wallet has been generated.\n" <<
     "Use \"help\" command to see the list of available commands.\n" <<
@@ -918,14 +921,14 @@ bool simple_wallet::new_wallet(Crypto::SecretKey &secret_key, Crypto::SecretKey 
     m_wallet->getAccountKeys(keys);
 
     logger(INFO, BRIGHT_WHITE) <<
-      "Imported wallet: " << m_wallet->getAddress() << std::endl;
+      "IMPORTED WALLET  # " << m_wallet->getAddress() << std::endl;
   }
   catch (const std::exception& e) {
     fail_msg_writer() << "failed to import wallet: " << e.what();
     return false;
   }
 
-  success_msg_writer() <<
+  success_msg_writer() <<"\n"<<
     "**********************************************************************\n" <<
     "Your wallet has been imported.\n" <<
     "Use \"help\" command to see the list of available commands.\n" <<
@@ -1072,19 +1075,24 @@ void simple_wallet::externalTransactionCreated(CryptoNote::TransactionId transac
   
   std::stringstream logPrefix;
   if (txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
-    logPrefix << "Unconfirmed";
+    logPrefix << "[ " << makeCenteredString(14, "UNCONFIRMED") << " ]";
   } else {
-    logPrefix << "Height " << txInfo.blockHeight << ',';
+    logPrefix << "[ HEIGHT " << std::setw(BLOCK_MAX_WIDTH) << txInfo.blockHeight << " ]";
   }
 
   if (txInfo.totalAmount >= 0) {
-    logger(INFO, GREEN) <<
-      logPrefix.str() << " transaction " << Common::podToHex(txInfo.hash) <<
-      ", received " << m_currency.formatAmount(txInfo.totalAmount);
+      logger(INFO, GREEN)
+      << "  " << std::setw(8) << "RECEIVED"
+      << "  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount)
+      << "  " << std::setw(HASH_MAX_WIDTH) << Common::podToHex(txInfo.hash)
+      << "  " << logPrefix.str() ;
+
   } else {
-    logger(INFO, MAGENTA) <<
-      logPrefix.str() << " transaction " << Common::podToHex(txInfo.hash) <<
-      ", spent " << m_currency.formatAmount(static_cast<uint64_t>(-txInfo.totalAmount));
+      logger(INFO, MAGENTA)
+      << "  " << std::setw(8) << "SPENT"
+      << "  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount)      
+      << "  " << std::setw(HASH_MAX_WIDTH) << Common::podToHex(txInfo.hash)
+      << "  " << logPrefix.str()   ;
   }
 
   if (txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
@@ -1110,8 +1118,8 @@ void simple_wallet::synchronizationProgressUpdated(uint32_t current, uint32_t to
 bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
   AccountKeys keys;
   m_wallet->getAccountKeys(keys);
-  success_msg_writer(true) << "Spend secret key: " << Common::podToHex(keys.spendSecretKey);
-  success_msg_writer(true) << "View secret key: " <<  Common::podToHex(keys.viewSecretKey);
+  success_msg_writer(true) << "SPEND SECRET KEY # " << Common::podToHex(keys.spendSecretKey);
+  success_msg_writer(true) << "VIEW SECRET KEY  # " <<  Common::podToHex(keys.viewSecretKey);
   Crypto::PublicKey unused_dummy_variable;
   Crypto::SecretKey deterministic_private_view_key;
 
@@ -1123,7 +1131,7 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
    wallet code generated random spend and view keys so we can't create a 
    mnemonic seed */
   if (deterministic_private_keys) {
-    std::cout << "Mnemonic seed: " << generate_mnemonic(keys.spendSecretKey) << std::endl;
+  success_msg_writer(true) << "MNEMONIC SEED    # " << generate_mnemonic(keys.spendSecretKey) << std::endl;
   }
 
 
@@ -1131,26 +1139,106 @@ bool simple_wallet::export_keys(const std::vector<std::string>& args/* = std::ve
 }
 
 bool simple_wallet::show_balance(const std::vector<std::string>& args/* = std::vector<std::string>()*/) {
-  success_msg_writer() << "available balance: " << m_currency.formatAmount(m_wallet->actualBalance()) <<
-    ", locked amount: " << m_currency.formatAmount(m_wallet->pendingBalance());
-
+ logger(INFO, GREEN)
+      << "   AVAILABLE #  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) <<  m_currency.formatAmount(m_wallet->actualBalance());
+  logger(INFO, YELLOW)
+      << "      LOCKED #  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(m_wallet->pendingBalance());
+  logger(INFO, BRIGHT_GREEN)
+      << "TOTAL AMOUNT #  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) <<m_currency.formatAmount(m_wallet->actualBalance() + m_wallet->pendingBalance());
+ 
   return true;
 }
 //----------------------------------------------------------------------------------------------------
 bool simple_wallet::show_incoming_transfers(const std::vector<std::string>& args) {
   bool hasTransfers = false;
   size_t transactionsCount = m_wallet->getTransactionCount();
+
+  std::string header = makeCenteredString(TIMESTAMP_MAX_WIDTH, "RCVD TIME (UTC)") + "  ";
+  header += makeCenteredString(HASH_MAX_WIDTH, "HASH") + "  ";
+  header += makeCenteredString(TOTAL_AMOUNT_MAX_WIDTH, "AMOUNT") + "  ";
+  header += makeCenteredString(FEE_MAX_WIDTH, "FEE") + "  ";
+  header += makeCenteredString(BLOCK_MAX_WIDTH, "BLOCK") + "  ";
+
+  logger(INFO) << std::string(header.size(), '-');
+  logger(INFO) << header;
+  logger(INFO) << std::string(header.size(), '-');
+
   for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
     WalletLegacyTransaction txInfo;
     m_wallet->getTransaction(trantransactionNumber, txInfo);
     if (txInfo.totalAmount < 0) continue;
     hasTransfers = true;
-    logger(INFO) << "        amount       \t                              tx id";
-    logger(INFO, GREEN) <<  // spent - magenta
-      std::setw(21) << m_currency.formatAmount(txInfo.totalAmount) << '\t' << Common::podToHex(txInfo.hash);
+
+    time_t timestamp = static_cast<time_t>(txInfo.timestamp);
+    char timeString[TIMESTAMP_MAX_WIDTH + 1];
+    if (std::strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", std::gmtime(&timestamp)) == 0) {
+        throw std::runtime_error("time buffer is too small");
+    }  
+
+ std::string timeStr (timeString);
+    std::string heightStr = std::to_string(txInfo.blockHeight);
+    if (txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
+      timeStr = "....-..-.. ..:..:..";
+      heightStr = "UNCNFM";
+    }
+    
+    logger(INFO, GREEN)
+      << std::setw(TIMESTAMP_MAX_WIDTH) << timeStr
+      << "  " << std::setw(HASH_MAX_WIDTH) << Common::podToHex(txInfo.hash) 
+      << "  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount)
+      << "  " << std::setw(FEE_MAX_WIDTH) << m_currency.formatAmount(txInfo.fee)
+      << "  " << std::setw(BLOCK_MAX_WIDTH) << heightStr;
+
   }
 
   if (!hasTransfers) success_msg_writer() << "No incoming transfers";
+  return true;
+}
+
+//----------------------------------------------------------------------------------------------------
+bool simple_wallet::show_outgoing_transfers(const std::vector<std::string>& args) {
+  bool hasTransfers = false;
+  size_t transactionsCount = m_wallet->getTransactionCount();
+  // logger(INFO) << "        AMOUNT       \t                              TX ID";
+
+  std::string header = makeCenteredString(TIMESTAMP_MAX_WIDTH, "SENT TIME (UTC)") + "  ";
+  header += makeCenteredString(HASH_MAX_WIDTH, "HASH") + "  ";
+  header += makeCenteredString(TOTAL_AMOUNT_MAX_WIDTH, "AMOUNT") + "  ";
+  header += makeCenteredString(FEE_MAX_WIDTH, "FEE") + "  ";
+  header += makeCenteredString(BLOCK_MAX_WIDTH, "BLOCK") + "  ";
+
+  logger(INFO) << std::string(header.size(), '-');
+  logger(INFO) << header;
+  logger(INFO) << std::string(header.size(), '-');
+
+  for (size_t trantransactionNumber = 0; trantransactionNumber < transactionsCount; ++trantransactionNumber) {
+    WalletLegacyTransaction txInfo;
+    m_wallet->getTransaction(trantransactionNumber, txInfo);
+    if (txInfo.totalAmount > 0) continue;
+    hasTransfers = true;
+
+    time_t timestamp = static_cast<time_t>(txInfo.timestamp);
+    char timeString[TIMESTAMP_MAX_WIDTH + 1];
+    if (std::strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", std::gmtime(&timestamp)) == 0) {
+        throw std::runtime_error("time buffer is too small");
+    }
+    
+    std::string timeStr (timeString);
+    std::string heightStr = std::to_string(txInfo.blockHeight);
+    if (txInfo.blockHeight == WALLET_LEGACY_UNCONFIRMED_TRANSACTION_HEIGHT) {
+      timeStr = "....-..-.. ..:..:..";
+      heightStr = "UNCNFM";
+    }
+
+    logger(INFO, MAGENTA)
+      << std::setw(TIMESTAMP_MAX_WIDTH) << timeStr
+      << "  " << std::setw(HASH_MAX_WIDTH) << Common::podToHex(txInfo.hash)
+      << "  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount)
+      << "  " << std::setw(FEE_MAX_WIDTH) << m_currency.formatAmount(txInfo.fee)
+      << "  " << std::setw(BLOCK_MAX_WIDTH) << heightStr;
+  }
+
+  if (!hasTransfers) success_msg_writer() << "No outgoing transfers";
   return true;
 }
 
@@ -1182,13 +1270,19 @@ bool simple_wallet::listTransfers(const std::vector<std::string>& args) {
 
 bool simple_wallet::show_payments(const std::vector<std::string> &args) {
   if (args.empty()) {
-    fail_msg_writer() << "expected at least one payment ID";
+    fail_msg_writer() << "EXPECTED AT LEAST ONE PAYMENT ID";
     return true;
   }
 
-  logger(INFO) << "                            payment                             \t" <<
-    "                          transaction                           \t" <<
-    "  height\t       amount        ";
+  std::string header = makeCenteredString(TIMESTAMP_MAX_WIDTH, "TIME (UTC)") + "  ";
+  header += makeCenteredString(HASH_MAX_WIDTH, "PAYMENT ID") + "  ";
+  header += makeCenteredString(HASH_MAX_WIDTH, "TX ID") + "  ";
+  header += makeCenteredString(TOTAL_AMOUNT_MAX_WIDTH, "AMOUNT") + "  ";
+  header += makeCenteredString(BLOCK_MAX_WIDTH, "BLOCK") + "  ";
+
+  logger(INFO) << std::string(header.size(), '-');
+  logger(INFO) << header;
+  logger(INFO) << std::string(header.size(), '-');
 
   bool payments_found = false;
   for (const std::string& arg: args) {
@@ -1206,11 +1300,18 @@ bool simple_wallet::show_payments(const std::vector<std::string> &args) {
         Crypto::Hash paymentId;
         if (CryptoNote::getPaymentIdFromTxExtra(extraVec, paymentId) && paymentId == expectedPaymentId) {
           payments_found = true;
-          success_msg_writer(true) <<
-            paymentId << "\t\t" <<
-            Common::podToHex(txInfo.hash) <<
-            std::setw(8) << txInfo.blockHeight << '\t' <<
-            std::setw(21) << m_currency.formatAmount(txInfo.totalAmount);// << '\t' <<
+            time_t timestamp = static_cast<time_t>(txInfo.timestamp);
+            char timeString[TIMESTAMP_MAX_WIDTH + 1];
+            if (std::strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", std::gmtime(&timestamp)) == 0) {
+                throw std::runtime_error("time buffer is too small");
+            }
+            
+            logger(INFO, MAGENTA)
+            << std::setw(TIMESTAMP_MAX_WIDTH) << timeString
+            << "  " << std::setw(FEE_MAX_WIDTH) << paymentId
+            << "  " << std::setw(HASH_MAX_WIDTH) << Common::podToHex(txInfo.hash)
+            << "  " << std::setw(TOTAL_AMOUNT_MAX_WIDTH) << m_currency.formatAmount(txInfo.totalAmount)
+            << "  " << std::setw(BLOCK_MAX_WIDTH) << txInfo.blockHeight;
         }
       }
 
@@ -1296,7 +1397,7 @@ bool simple_wallet::run() {
   std::cout << std::endl;
 
   std::string addr_start = m_wallet->getAddress().substr(0, 6);
-  m_consoleHandler.start(false, "[wallet " + addr_start + "]: ", Common::Console::Color::BrightYellow);
+  m_consoleHandler.start(false, "[ WALLET ~~ " + addr_start + " ] ^^# ", Common::Console::Color::BrightYellow);
   return true;
 }
 //----------------------------------------------------------------------------------------------------
@@ -1459,7 +1560,7 @@ int main(int argc, char* argv[]) {
       return 1;
     }
 
-    Tools::SignalHandler::install([&wrpc] {
+    Tools::SignalHandler::install([&wrpc, &wallet] {
       wrpc.send_stop_signal();
     });
 
