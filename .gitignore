@@ -1,4 +1,8 @@
-build
+.idea
+/cmake-build*
+/build*
+/tags
+
 
 # Prerequisites
 *.d
