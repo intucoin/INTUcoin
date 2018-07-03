@@ -59,7 +59,7 @@ add_executable(SimpleWallet ${SimpleWallet})
 add_executable(PaymentGateService ${PaymentGateService})
 add_executable(Miner ${Miner})
 
-if (MSVC)
+if(MSVC)
   target_link_libraries(System ws2_32)
   target_link_libraries(Daemon Rpcrt4)
   target_link_libraries(PaymentGateService Rpcrt4)
