@@ -65,6 +65,7 @@ if (MSVC)
   target_link_libraries(PaymentGateService Rpcrt4)
 endif ()
 
+target_link_libraries(CryptoNoteCore Common Logging Crypto P2P Rpc Http Serialization System ${Boost_LIBRARIES})
 target_link_libraries(CryptoNoteCore Common Crypto Logging Serialization)
 target_link_libraries(P2P CryptoNoteCore Logging ${Boost_LIBRARIES} upnpc-static)
 target_link_libraries(Rpc CryptoNoteCore Logging P2P)
