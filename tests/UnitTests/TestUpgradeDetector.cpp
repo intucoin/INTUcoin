@@ -155,7 +155,7 @@ namespace {
   TEST_F(UpgradeDetector_voting_init, handlesAFewCompleteUpgrades) {
     CryptoNote::Currency currency = createCurrency();
     const uint8_t BLOCK_V3 = BLOCK_MAJOR_VERSION_2 + 1;
-    const uint8_t BLOCK_V4 = BLOCK_MAJOR_VERSION_2 + 2;
+    // const uint8_t BLOCK_V4 = BLOCK_MAJOR_VERSION_2 + 2;
 
     BlockVector blocks;
 
@@ -174,11 +174,11 @@ namespace {
     createBlocks(blocks, 1, BLOCK_V3, BLOCK_MINOR_VERSION_0);
 
     createBlocks(blocks, currency.upgradeVotingWindow() * currency.upgradeVotingThreshold() / 100, BLOCK_V3, BLOCK_MINOR_VERSION_1);
-    uint32_t votingCompleteHeigntV4 = static_cast<uint32_t>(blocks.size() - 1);
-    uint32_t upgradeHeightV4 = currency.calculateUpgradeHeight(votingCompleteHeigntV4);
-    createBlocks(blocks, upgradeHeightV4 - blocks.size(), BLOCK_V3, BLOCK_MINOR_VERSION_0);
+    // uint32_t votingCompleteHeigntV4 = static_cast<uint32_t>(blocks.size() - 1);
+    // uint32_t upgradeHeightV4 = currency.calculateUpgradeHeight(votingCompleteHeigntV4);
+    // createBlocks(blocks, upgradeHeightV4 - blocks.size(), BLOCK_V3, BLOCK_MINOR_VERSION_0);
     // Upgrade to v4 is here
-    createBlocks(blocks, 1, BLOCK_V4, BLOCK_MINOR_VERSION_0);
+    // createBlocks(blocks, 1, BLOCK_V4, BLOCK_MINOR_VERSION_0);
 
     UpgradeDetector upgradeDetectorV2(currency, blocks, BLOCK_MAJOR_VERSION_2, logger);
     ASSERT_TRUE(upgradeDetectorV2.init());
@@ -190,10 +190,10 @@ namespace {
     ASSERT_EQ(upgradeDetectorV3.votingCompleteHeight(), votingCompleteHeigntV3);
     ASSERT_EQ(upgradeDetectorV3.upgradeHeight(), upgradeHeightV3);
 
-    UpgradeDetector upgradeDetectorV4(currency, blocks, BLOCK_V4, logger);
-    ASSERT_TRUE(upgradeDetectorV4.init());
-    ASSERT_EQ(upgradeDetectorV4.votingCompleteHeight(), votingCompleteHeigntV4);
-    ASSERT_EQ(upgradeDetectorV4.upgradeHeight(), upgradeHeightV4);
+    // UpgradeDetector upgradeDetectorV4(currency, blocks, BLOCK_V4, logger);
+    // ASSERT_TRUE(upgradeDetectorV4.init());
+    // ASSERT_EQ(upgradeDetectorV4.votingCompleteHeight(), votingCompleteHeigntV4);
+    // ASSERT_EQ(upgradeDetectorV4.upgradeHeight(), upgradeHeightV4);
   }
 
   TEST_F(UpgradeDetector_upgradeHeight_init, handlesEmptyBlockchain) {
