@@ -130,7 +130,9 @@ ITransfersSubscription& TransfersConsumer::addSubscription(const AccountSubscrip
     m_spendKeys.insert(subscription.keys.address.spendPublicKey);
 
     if (m_subscriptions.size() == 1) {
-      m_syncStart = res->getSyncStart();
+    auto subStart = res->getSyncStart();
+    m_syncStart.height = std::min(m_syncStart.height, subStart.height);
+    m_syncStart.timestamp = std::min(m_syncStart.timestamp, subStart.timestamp);
     } else {
       auto subStart = res->getSyncStart();
       m_syncStart.height = std::min(m_syncStart.height, subStart.height);
