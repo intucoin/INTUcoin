@@ -72,3 +72,7 @@ tp2/
 fbcode/
 fbcode
 buckifier/*.pyc
+third-party/gtest-1.7.0/fused-src/gtest/Makefile
+tools/Makefile
+build_version.cc
+Makefile

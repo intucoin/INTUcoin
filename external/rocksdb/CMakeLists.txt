@@ -294,7 +294,6 @@ if(WITH_NUMA)
     list(APPEND THIRDPARTY_LIBS ${NUMA_LIBRARIES})
   endif()
 endif()
-
 option(WITH_TBB "build with TBB" OFF)
 if(WITH_TBB)
   find_package(TBB)
