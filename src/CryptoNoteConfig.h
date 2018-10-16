@@ -125,12 +125,19 @@ const uint32_t P2P_DEFAULT_CONNECTION_TIMEOUT                = 5000;          //
 const uint32_t P2P_DEFAULT_PING_CONNECTION_TIMEOUT           = 2000;          // 2 seconds
 const uint64_t P2P_DEFAULT_INVOKE_TIMEOUT                    = 60 * 2 * 1000; // 2 minutes
 const size_t   P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT          = 5000;          // 5 seconds
+
+const uint32_t  P2P_FAILED_ADDR_FORGET_SECONDS                  = (60*60);     //1 hour
+const uint32_t  P2P_IP_BLOCKTIME                                 = (60*60*24);  //24 hour
+const uint32_t  P2P_IP_FAILS_BEFORE_BLOCK                       = 10;
+const uint32_t  P2P_IDLE_CONNECTION_KILL_INTERVAL               = (5*60); //5 minutes
+
 const char     P2P_STAT_TRUSTED_PUB_KEY[]                    = "";
 
-const char *const SEED_NODES[] = { "45.63.108.124:31569",
-                                   "107.191.51.180:31569",
-                                   "45.77.169.160:31569", 
-                                   "149.28.128.117:31569" };
+const char *const SEED_NODES[] = { 
+                                   "seed01.intucoin.com:31569",
+                                   "seed02.intucoin.com:31569",
+                                   "seed03.intucoin.com:31569",
+                                   "seed04.intucoin.com:31569"};
 
 struct CheckpointData {
   uint32_t index;
@@ -142,9 +149,13 @@ const std::initializer_list<CheckpointData> CHECKPOINTS = {
   {22000, "8242cad741c0cb6286931eedfcd0c20f997524489120c91cc59f67754fb9782e"}, 
   {42000, "22439349e3c82117676e8b37d3f9b3181a918eebebbf8134a6195cbb792c3590"}, 
   {65000, "5afa296a21f236c584d6ec3036abd525aaf7170f57f5ae15cb562d6522d1ad76"},
-  {74000, "1fc27d05366acb5600fc2bfad3ce989417c129e837ebba39ac4131b7cbfd6091"}
+  {74000, "1fc27d05366acb5600fc2bfad3ce989417c129e837ebba39ac4131b7cbfd6091"},
+  {84900, "13f930e2d5c20c4c0781018dcc8660062524e0618de5c6e4b4bb45568f1d33a8"},
+  {85000, "5f50d42af83ce29e7416df9727608046666db1cbec259f111c349e78c2584c42"},
+  {95000, "eb7f066882185a2743c76171e9ba7d36122a7e0b112f957920ca5ef804e37211"},
+  {111000,"551994e4b40a7c52e0e4e2e393644b0e048dfdd8a8801f250f77884a65f17941"},
+  {124000,"bbecc078f496b7d16756057706f3fb4a92c294a3287f1fc1542bb045451b414f"}
  };
-
 } // CryptoNote
 
 #define ALLOW_DEBUG_COMMANDS
