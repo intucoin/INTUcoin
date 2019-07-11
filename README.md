@@ -4,12 +4,18 @@ On *nix:
 
 Dependencies: GCC 4.7.3 or later, CMake 2.8.6 or later, and Boost 1.55.
 You may download them from:
-http://gcc.gnu.org/
-http://www.cmake.org/
-http://www.boost.org/
+- http://gcc.gnu.org/
+- http://www.cmake.org/
+- http://www.boost.org/
 Alternatively, it may be possible to install them using a package manager.
 
 To build, change to a directory where this file is located, and run `make'. The resulting executables can be found in build/release/src.
+
+- `git clone https://github.com/intucoin/INTUcoin.git intucoin`
+- `cd intucoin`
+- `mkdir build && cd $_`
+- `cmake -DCMAKE_BUILD_TYPE=Release -DSTATIC=ON -DDO_TESTS=OFF ..`
+- `make`
 
 Advanced options:
 Parallel build: run `make -j<number of threads>' instead of `make'.
@@ -24,9 +30,9 @@ http://www.cmake.org/
 http://www.boost.org/
 
 To build, change to a directory where this file is located, and run this commands: 
-mkdir build
-cd build
-cmake -G "Visual Studio 12 Win64" ..
+- `mkdir build`
+- `cd build`
+- `cmake -G "Visual Studio 12 Win64" ..`
 
 And then do Build.
 Good luck!
