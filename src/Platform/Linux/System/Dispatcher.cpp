@@ -102,11 +102,13 @@ Dispatcher::Dispatcher() {
         }
 
         auto result = close(remoteSpawnEvent);
+        if (result) {}
         assert(result == 0);
       }
     }
 
     auto result = close(epoll);
+    if (result) {}
     assert(result == 0);
   }
 
@@ -133,6 +135,7 @@ Dispatcher::~Dispatcher() {
 
   while (!timers.empty()) {
     int result = ::close(timers.top());
+    if (result) {}
     assert(result == 0);
     timers.pop();
   }
@@ -142,6 +145,7 @@ Dispatcher::~Dispatcher() {
   result = close(remoteSpawnEvent);
   assert(result == 0);
   result = pthread_mutex_destroy(reinterpret_cast<pthread_mutex_t*>(this->mutex));
+  if (result) {}
   assert(result == 0);
 }
 

@@ -90,6 +90,8 @@ void CommonLogger::setMaxLevel(Level level) {
   logLevel = level;
 }
 
+// CommonLogger::~CommonLogger(){}
+
 CommonLogger::CommonLogger(Level level) : logLevel(level), pattern("%D %T %L [%C] ") {
 }
 

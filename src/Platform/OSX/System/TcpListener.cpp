@@ -95,6 +95,7 @@ TcpListener::~TcpListener() {
   if (dispatcher != nullptr) {
     assert(context == nullptr);
     int result = close(listener);
+    if (result > 0) {}
     assert(result != -1);
   }
 }

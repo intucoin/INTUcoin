@@ -100,6 +100,7 @@ Dispatcher::Dispatcher() : lastCreatedTimer(0) {
     }
 
     auto result = close(kqueue);
+    if ( result ) {}
     assert(result == 0);
   }
 
@@ -125,8 +126,10 @@ Dispatcher::~Dispatcher() {
   }
   
   auto result = close(kqueue);
+  if ( result ) {}
   assert(result != -1);
   result = pthread_mutex_destroy(reinterpret_cast<pthread_mutex_t*>(this->mutex));
+  if ( result ) {}
   assert(result != -1);
 }
 

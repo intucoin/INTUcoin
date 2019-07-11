@@ -60,12 +60,12 @@ namespace po = boost::program_options;
 
 namespace
 {
-  const command_line::arg_descriptor<std::string> arg_config_file = {"config-file", "Specify configuration file", std::string(CryptoNote::CRYPTONOTE_NAME) + ".conf"};
-  const command_line::arg_descriptor<bool>        arg_os_version  = {"os-version", ""};
-  const command_line::arg_descriptor<std::string> arg_log_file    = {"log-file", "", ""};
-  const command_line::arg_descriptor<int>         arg_log_level   = {"log-level", "", 2}; // info level
-  const command_line::arg_descriptor<bool>        arg_console     = {"no-console", "Disable daemon console commands"};
-  const command_line::arg_descriptor<bool>        arg_print_genesis_tx = { "print-genesis-tx", "Prints genesis' block tx hex to insert it to config and exits" };
+  const command_line::arg_descriptor<std::string>   arg_config_file      = {"config-file", "Specify configuration file", std::string(CryptoNote::CRYPTONOTE_NAME) + ".conf"};
+  const command_line::arg_descriptor<bool>          arg_os_version       = {"os-version", ""};
+  const command_line::arg_descriptor<std::string>   arg_log_file         = {"log-file", "", ""};
+  const command_line::arg_descriptor<int>           arg_log_level        = {"log-level", "", 2}; // info level
+  const command_line::arg_descriptor<bool>          arg_console          = {"no-console", "Disable daemon console commands"};
+  const command_line::arg_descriptor<bool>          arg_print_genesis_tx = { "print-genesis-tx", "Prints genesis' block tx hex to insert it to config and exits" };
   const command_line::arg_descriptor<std::vector<std::string>> arg_genesis_block_reward_address = { "genesis-block-reward-address", "" };
   const command_line::arg_descriptor<std::vector<std::string>>        arg_enable_cors = { "enable-cors", "Adds header 'Access-Control-Allow-Origin' to the daemon's RPC responses. Uses the value as domain. Use * for all" };
   const command_line::arg_descriptor<bool> arg_blockexplorer_on = {"enable-blockexplorer", "Enable blockchain explorer RPC", false};
@@ -152,9 +152,9 @@ int main(int argc, char* argv[])
     command_line::add_arg(desc_cmd_sett, arg_console);
     command_line::add_arg(desc_cmd_sett, arg_testnet_on);
     command_line::add_arg(desc_cmd_sett, arg_blockexplorer_on);
-command_line::add_arg(desc_cmd_sett, arg_enable_cors);
-command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
-  command_line::add_arg(desc_cmd_sett, arg_genesis_block_reward_address);
+    command_line::add_arg(desc_cmd_sett, arg_enable_cors);
+    command_line::add_arg(desc_cmd_sett, arg_print_genesis_tx);
+    command_line::add_arg(desc_cmd_sett, arg_genesis_block_reward_address);
 
     RpcServerConfig::initOptions(desc_cmd_sett);
     NetNodeConfig::initOptions(desc_cmd_sett);
