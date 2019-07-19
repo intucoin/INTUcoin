@@ -18,6 +18,7 @@
 #include "StringTools.h"
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 
 namespace Common {
 
@@ -329,6 +330,7 @@ bool parseIpAddressAndPort(uint32_t& ip, uint32_t& port, const std::string& addr
 
   ip = (v[3] << 24) | (v[2] << 16) | (v[1] << 8) | v[0];
   port = localPort;
+  std::cout << ip << std::endl << port << std::endl;
   return true;
 }
 

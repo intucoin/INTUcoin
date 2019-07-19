@@ -50,6 +50,7 @@ public:
   const std::vector<Crypto::Hash>& getKnownBlockHashes() const;
 
   // IStreamSerializable
+  virtual ~SynchronizationState() {};
   virtual void save(std::ostream& os) override;
   virtual void load(std::istream& in) override;
 

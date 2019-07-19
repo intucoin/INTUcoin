@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <Common/StreamTools.h>
 #include "SerializationOverloads.h"
+#include "CryptoNoteConfig.h"
 
 using namespace Common;
 
@@ -99,7 +100,24 @@ bool BinaryInputStreamSerializer::operator()(std::string& value, Common::StringV
   uint64_t size;
   readVarint(stream, size);
 
-  if (size > 0) {
+  /* Can't take up more than a block size */
+  if (size > CryptoNote::parameters::MAX_EXTRA_SIZE  && std::string(name.getData()) == "mm_tag")
+  {
+    std::vector<char> temp;
+    temp.resize(1);
+
+    /* Read to the end of the stream, and throw the data away, otherwise
+       transaction won't validate. There should be a better way to do this? */
+    while (size > 0) {
+        checkedRead(&temp[0], 1);
+        size--;
+    }
+
+    value.clear();
+    return true;
+  }
+
+  if (size > 0 && size <= 1024) {
     std::vector<char> temp;
     temp.resize(size);
     checkedRead(&temp[0], size);

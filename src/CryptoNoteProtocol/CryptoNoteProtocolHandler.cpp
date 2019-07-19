@@ -335,7 +335,6 @@ int CryptoNoteProtocolHandler::handle_notify_new_block(int command, NOTIFY_NEW_B
       logger(Logging::TRACE) << context << "Block already exists";
     }
   } else if (result == error::AddBlockErrorCondition::BLOCK_REJECTED) {
-    m_p2p->drop_connection(context, true);
     context.m_state = CryptoNoteConnectionContext::state_synchronizing;
     NOTIFY_REQUEST_CHAIN::request r = boost::value_initialized<NOTIFY_REQUEST_CHAIN::request>();
     r.block_ids = m_core.buildSparseChain();
@@ -725,9 +724,9 @@ void CryptoNoteProtocolHandler::recalculateMaxObservedHeight(const CryptoNoteCon
   });
 
   m_observedHeight = std::max(peerHeight, m_core.getTopBlockIndex() + 1);
-    if (context.m_state == CryptoNoteConnectionContext::state_normal) {
-      m_observedHeight = m_core.getTopBlockIndex();
-    }
+  if (context.m_state == CryptoNoteConnectionContext::state_normal) {
+    m_observedHeight = m_core.getTopBlockIndex();
+  }
 }
 
 uint32_t CryptoNoteProtocolHandler::getObservedHeight() const {
